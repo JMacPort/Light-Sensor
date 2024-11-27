@@ -34,7 +34,6 @@ int main () {
 	I2C_Init();
 	LCD_Init();
 
-	LCD_Send_String("Hello");
 	while (1) {
 
 	}
@@ -113,6 +112,7 @@ void I2C_Write(uint8_t address, uint8_t data) {
 	I2C_Stop();
 }
 
+// Gives LCD commands for setup and positioning
 void LCD_Send_Command(uint8_t cmd) {
 	uint8_t upper = (cmd & 0xF0) | LCD_BL;
 	uint8_t lower = ((cmd << 4) & 0xF0) | LCD_BL;
@@ -124,6 +124,7 @@ void LCD_Send_Command(uint8_t cmd) {
 	I2C_Write(LCD_ADDR, lower);
 }
 
+// Initializes the LCD with a 4-bit command structure
 void LCD_Init() {
 	LCD_Send_Command(0x33);
 	LCD_Send_Command(0x32);
@@ -133,6 +134,7 @@ void LCD_Init() {
 	LCD_Send_Command(LCD_CLEAR);
 }
 
+// Writes data to LCD
 void LCD_Send_Data(uint8_t data) {
 	uint8_t upper = (data & 0xF0) | LCD_BL | LCD_RS;
 	uint8_t lower = ((data << 4) & 0xF0) | LCD_BL | LCD_RS;
@@ -144,6 +146,7 @@ void LCD_Send_Data(uint8_t data) {
 	I2C_Write(LCD_ADDR, lower);
 }
 
+// Prints a string to the LCD
 void LCD_Send_String(char* str) {
 	while (*str != '\0' ) {
 		LCD_Send_Data(*str);
@@ -166,7 +169,7 @@ void USART_Init() {
 	USART2 -> CR1 |= (1 << 13);										// USART2 Enabled
 }
 
-// printf() retargeting
+// printf() retargeting - For debugging and USART communication
 int __io_putchar(int c) {
 	while(!(USART2 -> SR & (1 << 7)));
 	USART2 -> DR = c;
