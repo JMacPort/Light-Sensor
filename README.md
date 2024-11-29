@@ -7,7 +7,7 @@ Light sensor that returns a value via an I2C interface that displays a value "Li
 - BH1750 - Light Sensor
 
 # Features
-- UART Terminal Communication
+- USART Terminal Communication
 - I2C communication between MCU, BH1750 and LCD
 - Light Detection
 - Clock display (decided against)
