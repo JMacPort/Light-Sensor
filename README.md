@@ -1,5 +1,5 @@
 # I2C Light Sensor with LCD and USART Serial Terminal
-Light sensor that when light is detected displays to the LCD screen and maybe lights up LEDs. LCD will use a timer interrupt to keep time and will display a status of "Light" or "No Light". 
+Light sensor that returns a value via an I2C interface that displays a value "Light" or "Dark" on an LCD via the same I2C bus, depending on the light value reading. UART terminal display also debugs and prints the when the sensor is initialized an what the light value is in a decimal value.
 
 # Hardware
 - STM32-F466RE
@@ -10,9 +10,13 @@ Light sensor that when light is detected displays to the LCD screen and maybe li
 - UART Terminal Communication
 - I2C communication between MCU, BH1750 and LCD
 - Light Detection
-- Clock display
+- Clock display (decided against)
 
 # Pins 
 - SCL and SDA connected to both LCD and BH1750
 - 3.3V power
 - RX/TX configured from ST-Link
+
+![Uncovered_Screen](/images/Uncovered_Sensor.jpeg)
+![Covered_Screen](/images/Covered_Sensor.jpeg)
+![Terminal_Output](/images/Terminal_Output.png)

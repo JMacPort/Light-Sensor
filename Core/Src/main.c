@@ -16,8 +16,9 @@
 #define LCD_DISPLAY_ON  	0x0C			// Display on, cursor off, blink off
 #define LCD_FUNCTION_SET 	0x28			// 4-bit mode, 2 lines, 5x8 font
 // Light Sensor
-#define Light_ADDR			0x23			// Light Sensor Address
-
+#define LIGHT_ADDR			0x23			// Light Sensor Address
+#define LIGHT_ON			0x01			// Sensor Enabled
+#define LIGHT_CONTINOUS		0x10			// Continuous Mode
 
 // Prototypes
 void USART_Init();
@@ -26,6 +27,9 @@ void LCD_Init();
 void LCD_Send_Command(uint8_t);
 void LCD_Send_Data(uint8_t);
 void LCD_Send_String(char*);
+void Light_Sensor_Init();
+uint16_t Light_Read();
+void LCD_Light_Reading();
 //void Find_Addr();
 
 
@@ -33,9 +37,11 @@ int main () {
 	USART_Init();
 	I2C_Init();
 	LCD_Init();
+	Light_Sensor_Init();
 
 	while (1) {
-
+		LCD_Light_Reading();
+		for (volatile int i = 0; i < 10000000; i++);
 	}
 }
 
@@ -79,7 +85,7 @@ void I2C_Start() {
 // Sends device address for communication
 int I2C_Send_Address(uint8_t address, uint8_t read) {
 	I2C1 -> DR = (address << 1) | read;
-	for (volatile int i = 0; i < 5000; i++);
+//	for (volatile int i = 0; i < 5000; i++);
 	if (I2C1 -> SR1 & (1 << 10)) {
 		return 0;
 	}
@@ -154,6 +160,35 @@ void LCD_Send_String(char* str) {
 	}
 }
 
+void Light_Sensor_Init(){
+	I2C_Write(LIGHT_ADDR, LIGHT_ON);
+	I2C_Write(LIGHT_ADDR, LIGHT_CONTINOUS);
+	printf("Sensor Initialized\r\n");
+}
+
+uint16_t Light_Read() {
+	uint8_t first, second;
+
+	I2C_Start();
+	I2C_Send_Address(LIGHT_ADDR, 1);
+
+	I2C1 -> CR1 |= (1 << 10);
+
+	while(!(I2C1 -> SR1 & (1 << 6)));
+	first = I2C1 -> DR;
+
+	I2C1 -> CR1 &= ~(1 << 10);
+
+	while(!(I2C1 -> SR1 & (1 << 6)));
+	second = I2C1 -> DR;
+
+	I2C_Stop();
+
+	uint16_t value = (first << 8) | second;
+	printf("Light Value: %u\r\n", value);
+	return value;
+}
+
 void USART_Init() {
 	RCC -> APB1ENR |= (1 << 17);									// USART2 Clock
 	RCC -> AHB1ENR |= (1 << 0);										// GPIOA Clock
@@ -177,6 +212,16 @@ int __io_putchar(int c) {
 	while(!(USART2 -> SR & (1 << 6)));
 	USART2 -> SR &= ~(1 << 6);
 	return c;
+}
+
+void LCD_Light_Reading() {
+	LCD_Send_Command(LCD_CLEAR);
+	uint16_t value = Light_Read();
+	if (value > 30) {
+		LCD_Send_String("Light");
+	} else {
+		LCD_Send_String("Dark");
+	}
 }
 
 // Used to discover device addresses - No longer necessary
