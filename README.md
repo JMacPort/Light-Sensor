@@ -11,7 +11,7 @@ Developed an embedded system that integrates multiple I2C devices on a shared bu
 - Designed robust error handling for I2C communication
 
 ## Hardware Components
-- MCU: STM32F446RE (ARM Cortex-M4)
+- STM32F446RE 
 - Sensors: BH1750 Light Sensor
 - Display: 16x2 I2C LCD Module
 - Communication: UART via ST-Link
