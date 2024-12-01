@@ -25,7 +25,7 @@ Developed an embedded system that integrates multiple I2C devices on a shared bu
 
 ## Pin Configuration
 - I2C: SCL/SDA shared bus configuration
-- Power: 3.3V rail management
+- Power: 3.3V and 5V
 - Debug: UART TX/RX via ST-Link
 
 ## Development Tools
